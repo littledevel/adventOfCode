@@ -11,43 +11,29 @@ int calc_digits(digits *dg){
     return dg->x * 10 + dg->y;
 }
 
-int is_digit(char c){
-
-}
-
-
-digits check_line(char c, int size){
-    switch (c) {
-        case 'o':
-            printf("%c\n", c);
-            break;
-        case 'n':
-            printf("%c\n", c);
-            break;
-        case 'e':
-            printf("%c\n", c);
-            break;
-        case 's':
-            printf("%c\n", c);
-            break;
-        case 'f':
-            printf("%c\n", c);
-            break;
-        case 't':
-            printf("%c\n", c);
-            break;
-        default:
-            break;
+int is_substr(char *haystack, size_t haystack_size, char *needle, size_t needle_size){
+    int i = 0;
+    while (i<haystack_size){
+        int k = i;
+        int j = 0;
+        while ( haystack[k] == needle[j] ){
+            k++;
+            j++;
+        }
+        if (j == needle_size){
+            return i;
+        } else {
+            i++;
+        }
     }
+    return -1;
 }
-
 
 digits *get_digits(char *line, int size){
     digits *dg = (digits*) malloc(sizeof(digits));
     dg->x = -1;
     dg->y = -1;
     for (int i=0;i<size;i++){
-        check_line(line[i],1);
         int n = line[i] - 48;
         if ((n >=0 ) && (n<=9)){
             if (dg->x == -1){
@@ -62,13 +48,33 @@ digits *get_digits(char *line, int size){
 }
 
 
+
 void read_input(FILE *fp, char **buffer){
+    char *nums[9] = {
+            "one",
+            "two",
+            "three",
+            "four",
+            "five",
+            "six",
+            "seven",
+            "eight",
+            "nine"
+            };
     int size;
     ssize_t bytes_read;
     char *line = NULL;
     int sum = 0;
+    char *one = "one";
     while ((bytes_read = getline(&line, &size, fp)) > 0 ) {
         printf("%s", line);
+        for (int i = 0; i < 9; i++){
+            int found = is_substr(line, strlen(line), nums[i], strlen(nums[i]) );
+            if (found > -1){
+                line[found] = i + '0' + 1;
+            }
+        }
+        printf("> %s", line);
         digits *dg = get_digits(line, strlen(line));
         sum += calc_digits(dg);
         free(dg);
